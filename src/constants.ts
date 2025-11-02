@@ -1,0 +1,1 @@
+export const LOGIN_TOKEN_EXPIRE_TIME_MS = 3600000;
