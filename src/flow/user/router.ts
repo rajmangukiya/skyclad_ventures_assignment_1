@@ -7,8 +7,8 @@ import authCheckMiddleware from "../../middlewares/auth";
 
 const router = express.Router();
 
-router.post("/", authCheckMiddleware(UserRole.admin), validateRequest({ body: CreateUserRequest }), createUserController);
-router.get("/", authCheckMiddleware(UserRole.admin), getAllUsersController);
+router.post("/", authCheckMiddleware([UserRole.admin]), validateRequest({ body: CreateUserRequest }), createUserController);
+router.get("/", authCheckMiddleware([UserRole.admin, UserRole.support, UserRole.moderator]), getAllUsersController);
 
 // login user
 router.post("/login", validateRequest({ body: LoginUserRequest }), loginUserController);

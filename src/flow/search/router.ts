@@ -7,9 +7,10 @@ import authCheckMiddleware from "../../middlewares/auth";
 
 const router = express.Router();
 
+// Search for documents in folders or files
 router.get(
   "/",
-  authCheckMiddleware(UserRole.user),
+  authCheckMiddleware([UserRole.admin, UserRole.user, UserRole.support, UserRole.moderator]),
   validateRequest({ query: SearchRequest }),
   searchController
 );

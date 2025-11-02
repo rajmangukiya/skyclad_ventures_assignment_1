@@ -8,10 +8,11 @@ import { upload } from "../../utils/multer";
 
 const router = express.Router();
 
+// Add a document
 router.post(
     "/", 
     upload.single("document"),
-    authCheckMiddleware(UserRole.user), 
+    authCheckMiddleware([UserRole.admin, UserRole.user]), 
     validateRequest({ body: AddDocumentRequest }), 
     addDocument.controller
 );

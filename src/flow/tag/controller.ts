@@ -3,17 +3,19 @@ import * as documentTagQuery from "../../database/query/documentTag";
 import Tag from "../../database/models/Tag";
 import * as tagQuery from "../../database/query/tag";
 import * as documentQuery from "../../database/query/document";
+import { UserRole } from "../../database/types";
 
 export const getPrimaryTagsController = async (req: Request, res: Response) => {
     try {
         const ownerId = req.auth.user._id;
 
-        if (!ownerId) {
-            return res.status(401).json({ message: "Unauthorized" });
-        }
-
         // Get primary tags with document counts
-        const primaryTagsWithCounts = await documentTagQuery.getPrimaryTagsWithDocumentCounts(ownerId);
+        let primaryTagsWithCounts: { tagId: string; documentCount: number }[] = [];
+        if (req.auth.user.role == UserRole.user) {
+            primaryTagsWithCounts = await documentTagQuery.getPrimaryTagsWithDocumentCounts(ownerId);
+        } else {
+            primaryTagsWithCounts = await documentTagQuery.getPrimaryTagsWithDocumentCounts();
+        }
 
         // If no primary tags found, return empty array
         if (primaryTagsWithCounts.length === 0) {

@@ -38,9 +38,9 @@ export const deleteDocumentTag = async (documentId: string, tagId: string): Prom
   }
 };
 
-export const getPrimaryTagsWithDocumentCounts = async (ownerId: string): Promise<Array<{ tagId: string; documentCount: number }>> => {
+export const getPrimaryTagsWithDocumentCounts = async (ownerId?: string): Promise<Array<{ tagId: string; documentCount: number }>> => {
   try {
-    const userTags = await Tag.find({ ownerId });
+    const userTags = await Tag.find({ ownerId: ownerId ?? { $exists: true } });
     const userTagIds = userTags.map(tag => tag._id);
 
     if (userTagIds.length === 0) {

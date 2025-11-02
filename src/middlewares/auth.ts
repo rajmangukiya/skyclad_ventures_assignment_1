@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import env from "../env";
 import * as userQuery from "../database/query/user";
 
-const authCheckMiddleware = (userRole: UserRole) => {
+const authCheckMiddleware = (userRoles: UserRole[]) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
 
@@ -22,14 +22,15 @@ const authCheckMiddleware = (userRole: UserRole) => {
                 return res.status(401).json({ message: "Unauthorized" });
             }
 
-            req.auth = { user };
+            if (!userRoles.includes(user.role)) {
+                return res.status(403).json({ message: "Forbidden" });
+            }
 
             next();
         } catch (error) {
-            console.log(error);
-            res.status(500).json({ message: "Internal server error" });
+            next(error);
         }
-    }
-}
+    };
+};
 
 export default authCheckMiddleware;
