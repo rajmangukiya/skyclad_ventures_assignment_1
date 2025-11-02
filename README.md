@@ -1,3 +1,6 @@
+<!-- Assignment Duration -->
+02/11 11:00 AM - 02/11 4:00 PM
+
 <!-- start dev environment -->
 npm install
 npm run dev
