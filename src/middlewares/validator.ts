@@ -6,7 +6,6 @@ import { ParsedQs } from "qs";
 
 export function validateRequest(reqestSchema: RequestValidators) {
     return async (req: Request, res: Response, next: NextFunction) => {
-        console.log('request received', reqestSchema.body);
         try {
             if (reqestSchema.params) {
                 req.params = reqestSchema.params.parse(req.params) as ParamsDictionary;

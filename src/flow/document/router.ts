@@ -1,5 +1,5 @@
 import express from "express";
-import { addDocumentController } from "./controller";
+import { addDocument } from "./controller";
 import { validateRequest } from "../../middlewares/validator";
 import { AddDocumentRequest } from "./types";
 import { UserRole } from "../../database/types";
@@ -13,7 +13,7 @@ router.post(
     upload.single("document"),
     authCheckMiddleware(UserRole.user), 
     validateRequest({ body: AddDocumentRequest }), 
-    addDocumentController
+    addDocument.controller
 );
 
 export default router;      

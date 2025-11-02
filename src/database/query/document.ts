@@ -13,3 +13,24 @@ export const addDocument = async (documentData: {
     throw error;
   }
 };
+
+// Get documents by document IDs
+export const getDocumentsByIds = async (documentIds: string[]): Promise<IDocument[]> => {
+  try {
+    if (documentIds.length === 0) {
+      return [];
+    }
+    return await Document.find({ _id: { $in: documentIds } }).sort({ createdAt: -1 });
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Get documents by owner ID
+export const getDocumentsByOwnerId = async (ownerId: string): Promise<IDocument[]> => {
+  try {
+    return await Document.find({ ownerId }).sort({ createdAt: -1 });
+  } catch (error) {
+    throw error;
+  }
+};

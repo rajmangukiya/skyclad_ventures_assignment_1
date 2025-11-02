@@ -55,3 +55,11 @@ export const findTagByName = async (name: string, ownerId: string): Promise<ITag
   }
 };
 
+export const findTagsByNames = async (names: string[], ownerId: string): Promise<ITag[]> => {
+  try {
+    const normalizedNames = names.map(name => name.trim().toLowerCase());
+    return await Tag.find({ name: { $in: normalizedNames }, ownerId });
+  } catch (error) {
+    throw error;
+  }
+};
