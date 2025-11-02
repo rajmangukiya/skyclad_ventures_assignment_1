@@ -63,3 +63,31 @@ export const findTagsByNames = async (names: string[], ownerId: string): Promise
     throw error;
   }
 };
+
+// Search tags (folders) by name
+export const searchTags = async (
+  ownerId: string,
+  searchQuery?: string,
+  tagIds?: string[]
+): Promise<ITag[]> => {
+  try {
+    const query: any = {
+      ownerId: ownerId,
+    };
+
+    // Filter by tag IDs if provided
+    if (tagIds && tagIds.length > 0) {
+      query._id = { $in: tagIds };
+    }
+
+    // Full-text search using regex on tag name
+    if (searchQuery && searchQuery.trim()) {
+      const searchRegex = new RegExp(searchQuery.trim(), "i"); // Case-insensitive
+      query.name = { $regex: searchRegex };
+    }
+
+    return await Tag.find(query).sort({ createdAt: -1 });
+  } catch (error) {
+    throw error;
+  }
+};

@@ -34,3 +34,34 @@ export const getDocumentsByOwnerId = async (ownerId: string): Promise<IDocument[
     throw error;
   }
 };
+
+// Full-text search in documents
+export const searchDocuments = async (
+  ownerId: string,
+  searchQuery?: string,
+  documentIds?: string[]
+): Promise<IDocument[]> => {
+  try {
+    const query: any = {
+      ownerId: ownerId,
+    };
+
+    // Filter by document IDs if provided
+    if (documentIds && documentIds.length > 0) {
+      query._id = { $in: documentIds };
+    }
+
+    // Full-text search using regex on textContent and filename
+    if (searchQuery && searchQuery.trim()) {
+      const searchRegex = new RegExp(searchQuery.trim(), "i"); // Case-insensitive
+      query.$or = [
+        { textContent: { $regex: searchRegex } },
+        { filename: { $regex: searchRegex } },
+      ];
+    }
+
+    return await Document.find(query).sort({ createdAt: -1 });
+  } catch (error) {
+    throw error;
+  }
+};
