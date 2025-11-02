@@ -10,7 +10,6 @@ import { LOGIN_TOKEN_EXPIRE_TIME_MS } from "../../constants";
 export const createUserController = async (req: Request<{}, {}, CreateUserRequest>, res: Response) => {
 
     try {
-        console.log(req.auth.user);
         // is user already exists
         const user = await userQuery.getUserByEmail(req.body.email);
         if (user) {

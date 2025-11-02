@@ -7,12 +7,15 @@ import { UserRole } from "../../database/types";
 
 export const getPrimaryTagsController = async (req: Request, res: Response) => {
     try {
-        const ownerId = req.auth.user._id;
+        if (!req.auth || !req.auth.user) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+        const authUser = req.auth.user;
 
         // Get primary tags with document counts
         let primaryTagsWithCounts: { tagId: string; documentCount: number }[] = [];
-        if (req.auth.user.role == UserRole.user) {
-            primaryTagsWithCounts = await documentTagQuery.getPrimaryTagsWithDocumentCounts(ownerId);
+        if (authUser.role == UserRole.user) {
+            primaryTagsWithCounts = await documentTagQuery.getPrimaryTagsWithDocumentCounts(authUser._id);
         } else {
             primaryTagsWithCounts = await documentTagQuery.getPrimaryTagsWithDocumentCounts();
         }
@@ -54,12 +57,15 @@ export const getPrimaryTagsController = async (req: Request, res: Response) => {
 
 export const getDocumentsByPrimaryTagController = async (req: Request, res: Response) => {
     try {
-        const ownerId = req.auth.user._id;
-        const tagName = req.params.primaryTag as string;
-
-        if (!ownerId) {
-            return res.status(401).json({ message: "Unauthorized" });
+        if (!req.auth || !req.auth.user) {
+            return res.status(401).json({ message: "Unauthorized: No user found in controller" });
         }
+        const authUser = req.auth.user;
+        let ownerId: string | undefined;
+        if (authUser.role == UserRole.user) {
+            ownerId = authUser._id;
+        }
+        const tagName = req.params.primaryTag as string;
 
         if (!tagName) {
             return res.status(400).json({ message: "Tag name is required" });
@@ -73,13 +79,12 @@ export const getDocumentsByPrimaryTagController = async (req: Request, res: Resp
         }
 
         // Verify the tag belongs to the user
-        if (tag.ownerId != ownerId) {
+        if (ownerId && tag.ownerId != ownerId) {
             return res.status(403).json({ message: "Access denied" });
         }
 
         // Get all document IDs where this tag is the primary tag
         const documentIds = await documentTagQuery.getDocumentIdsByPrimaryTagId(tag._id.toString());
-        console.log('documentIds', documentIds);
 
         if (documentIds.length === 0) {
             return res.status(200).json({
@@ -91,11 +96,8 @@ export const getDocumentsByPrimaryTagController = async (req: Request, res: Resp
         // Get all documents
         const documents = await documentQuery.getDocumentsByIds(documentIds);
 
-        // Filter to ensure documents belong to the user (additional security check)
-        const userDocuments = documents.filter(doc => doc.ownerId == ownerId);
-
         // Format response
-        const formattedDocuments = userDocuments.map(doc => ({
+        const formattedDocuments = documents.map(doc => ({
             id: doc._id,
             filename: doc.filename,
             mime: doc.mime,

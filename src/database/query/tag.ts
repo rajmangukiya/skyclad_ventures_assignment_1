@@ -43,12 +43,12 @@ export const findTagById = async (tagId: string): Promise<ITag | null> => {
 /**
  * Find tag by name and ownerId
  */
-export const findTagByName = async (name: string, ownerId: string): Promise<ITag | null> => {
+export const findTagByName = async (name: string, ownerId?: string): Promise<ITag | null> => {
   try {
     const normalizedName = name.trim().toLowerCase();
     return await Tag.findOne({ 
       name: normalizedName, 
-      ownerId 
+      ownerId: ownerId ?? { $exists: true }
     });
   } catch (error) {
     throw error;
@@ -66,14 +66,16 @@ export const findTagsByNames = async (names: string[], ownerId: string): Promise
 
 // Search tags (folders) by name
 export const searchTags = async (
-  ownerId: string,
+  ownerId?: string,
   searchQuery?: string,
   tagIds?: string[]
 ): Promise<ITag[]> => {
   try {
-    const query: any = {
-      ownerId: ownerId,
-    };
+    const query: any = {};
+
+    if (ownerId) {
+      query.ownerId = ownerId;
+    }
 
     // Filter by tag IDs if provided
     if (tagIds && tagIds.length > 0) {

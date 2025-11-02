@@ -37,14 +37,16 @@ export const getDocumentsByOwnerId = async (ownerId: string): Promise<IDocument[
 
 // Full-text search in documents
 export const searchDocuments = async (
-  ownerId: string,
+  ownerId?: string,
   searchQuery?: string,
   documentIds?: string[]
 ): Promise<IDocument[]> => {
   try {
-    const query: any = {
-      ownerId: ownerId,
-    };
+    const query: any = {};
+
+    if (ownerId) {
+      query.ownerId = ownerId;
+    }
 
     // Filter by document IDs if provided
     if (documentIds && documentIds.length > 0) {

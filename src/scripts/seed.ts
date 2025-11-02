@@ -24,10 +24,6 @@ async function seed() {
     await connectDB();
     console.log("Connected to database!");
 
-    // Clear existing data (optional - uncomment if you want to reset)
-    // await BaseUser.deleteMany({});
-    // console.log("Cleared existing users");
-
     // Create all 4 user types
     const defaultPassword = "password123";
     const hashedPassword = await bcrypt.hash(defaultPassword, 10);
@@ -121,7 +117,7 @@ async function seed() {
       tagId: (await tagQuery.findOrCreateTag("planning", user1._id.toString()))._id.toString(),
       isPrimary: false,
     });
-    console.log(`✓ Created document: ${doc1File.originalname} with primary tag "Projects"`);
+    console.log(`✓ Created document: ${doc1File.originalname} with primary tag "Projects" and secondary tags: requirements, planning`);
 
     const doc2File = createMockFile(
       "meeting-notes-2024.md",
@@ -150,7 +146,7 @@ async function seed() {
       tagId: (await tagQuery.findOrCreateTag("2024", user1._id.toString()))._id.toString(),
       isPrimary: false,
     });
-    console.log(`✓ Created document: ${doc2File.originalname} with primary tag "Meetings"`);
+    console.log(`✓ Created document: ${doc2File.originalname} with primary tag "Meetings" and secondary tags: notes, 2024`);
 
     const doc3File = createMockFile(
       "api-documentation.json",
@@ -181,7 +177,7 @@ async function seed() {
       tagId: (await tagQuery.findOrCreateTag("api", user1._id.toString()))._id.toString(),
       isPrimary: false,
     });
-    console.log(`✓ Created document: ${doc3File.originalname} with primary tag "Documentation"`);
+    console.log(`✓ Created document: ${doc3File.originalname} with primary tag "Documentation" and secondary tags: api, documentation`);
 
     // Upload documents for User 2 (support@example.com)
     console.log(`\nUploading documents for ${user2.email}...`);
@@ -213,7 +209,7 @@ async function seed() {
       tagId: (await tagQuery.findOrCreateTag("troubleshooting", user2._id.toString()))._id.toString(),
       isPrimary: false,
     });
-    console.log(`✓ Created document: ${doc4File.originalname} with primary tag "Support"`);
+    console.log(`✓ Created document: ${doc4File.originalname} with primary tag "Support" and secondary tags: guide, troubleshooting`);
 
     const doc5File = createMockFile(
       "customer-feedback.csv",
@@ -242,17 +238,18 @@ async function seed() {
       tagId: (await tagQuery.findOrCreateTag("analytics", user2._id.toString()))._id.toString(),
       isPrimary: false,
     });
-    console.log(`✓ Created document: ${doc5File.originalname} with primary tag "Feedback"`);
+    console.log(`✓ Created document: ${doc5File.originalname} with primary tag "Feedback" and secondary tags: customer, analytics`);
 
     console.log("\n✅ Seed completed successfully!");
     console.log("\nCreated users:");
     console.log("  - admin@example.com (password: password123)");
     console.log("  - support@example.com (password: password123)");
     console.log("  - moderator@example.com (password: password123)");
-    console.log("  - user@example.com (password: password123)");
+    console.log("  - user1@example.com (password: password123)");
+    console.log("  - user2@example.com (password: password123)");
     console.log("\nUploaded documents:");
-    console.log(`  User 1 (user@example.com): 3 documents`);
-    console.log(`  User 2 (support@example.com): 2 documents`);
+    console.log(`  User 1 (user1@example.com): 3 documents`);
+    console.log(`  User 2 (user2@example.com): 2 documents`);
 
     // Close database connection
     await mongoose.connection.close();

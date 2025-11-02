@@ -2,13 +2,18 @@ import { Request, Response } from "express";
 import * as documentQuery from "../../database/query/document";
 import * as tagQuery from "../../database/query/tag";
 import * as documentTagQuery from "../../database/query/documentTag";
+import { UserRole } from "../../database/types";
 
 export const searchController = async (req: Request, res: Response) => {
   try {
-    const ownerId = req.auth.user._id;
-
-    if (!ownerId) {
+    
+    if (!req.auth || !req.auth.user) {
       return res.status(401).json({ message: "Unauthorized" });
+    }
+    const authUser = req.auth.user;
+    let ownerId: string | undefined;
+    if (authUser.role == UserRole.user) {
+      ownerId = authUser._id
     }
 
     const searchQuery = req.query.q as string | undefined;
